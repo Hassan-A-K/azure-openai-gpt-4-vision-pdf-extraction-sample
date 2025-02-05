@@ -55,12 +55,19 @@ namespace ModifiedExtractor
                     return;
                 }
 
+                string outputFolderPath = Path.Combine(currentDirectory, "Output");
+                if (!Directory.Exists(outputFolderPath))
+                {
+                    Directory.CreateDirectory(outputFolderPath);
+                }
+
                 string[] pdfFiles = Directory.GetFiles(diagramsFolderPath, "*.pdf");
 
                 foreach (string pdfFilePath in pdfFiles)
                 {
                     string pdfName = Path.GetFileNameWithoutExtension(pdfFilePath);
                     string pdfJsonExtractionName = $"{pdfName}.Extraction.json";
+                    string responseFileName = $"{pdfName}.Response.json";
 
                     var pdf = await File.ReadAllBytesAsync(pdfFilePath);
                     var pageImages = PDFtoImage.Conversion.ToImages(pdf);
@@ -166,8 +173,7 @@ namespace ModifiedExtractor
 
                         if (response.IsSuccessStatusCode)
                         {
-                            string responseFileName = $"{pdfName}.Response.json";
-                            File.WriteAllText(responseFileName, await response.Content.ReadAsStringAsync());
+                            File.WriteAllText(Path.Combine(outputFolderPath, responseFileName), await response.Content.ReadAsStringAsync());
 
                             using (var responseStream = await response.Content.ReadAsStreamAsync())
                             {
@@ -184,8 +190,8 @@ namespace ModifiedExtractor
                                         string messageContent = content.GetString();
 
                                         // Output the message content
-                                        File.WriteAllText(pdfJsonExtractionName, messageContent);
-                                        Console.WriteLine($"{pdfJsonExtractionName} has been created with the content from the response from the OpenAI API.");
+                                        File.WriteAllText(Path.Combine(outputFolderPath, pdfJsonExtractionName), messageContent);
+                                        Console.WriteLine($"{Path.Combine(outputFolderPath, pdfJsonExtractionName)} has been created with the content from the response from the OpenAI API.");
 
                                         if (messageContent != null)
                                         {
