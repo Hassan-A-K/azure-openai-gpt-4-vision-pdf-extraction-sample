@@ -61,6 +61,15 @@ namespace ModifiedExtractor
                     Directory.CreateDirectory(outputFolderPath);
                 }
 
+                string systemPromptFilePath = Path.Combine(currentDirectory, "DCPromptsForAzureOpenAI.txt");
+                if (!File.Exists(systemPromptFilePath))
+                {
+                    Console.WriteLine($"File 'DCPromptsForAzureOpenAI.txt' does not exist in the current directory.");
+                    return;
+                }
+
+                string systemPrompt = await File.ReadAllTextAsync(systemPromptFilePath);
+
                 string[] pdfFiles = Directory.GetFiles(diagramsFolderPath, "*.pdf");
 
                 foreach (string pdfFilePath in pdfFiles)
@@ -135,7 +144,7 @@ namespace ModifiedExtractor
                                 new JsonObject
                                 {
                                     { "role", "system" },
-                                    { "content", "You are an AI assistant that extracts data from documents and returns them as structured JSON objects. Do not return as a code block." }
+                                    { "content", systemPrompt }
                                 },
                                 new JsonObject
                                 {
