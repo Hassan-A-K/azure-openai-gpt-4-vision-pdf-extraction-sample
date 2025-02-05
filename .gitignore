@@ -401,3 +401,6 @@ FodyWeavers.xsd
 *.env
 *.jpg
 *Outputs.json
+
+# Files
+Demo Files/
