@@ -59,7 +59,7 @@ namespace ModifiedExtractor
 
                 foreach (string pdfFilePath in pdfFiles)
                 {
-                    string pdfName = Path.GetFileName(pdfFilePath);
+                    string pdfName = Path.GetFileNameWithoutExtension(pdfFilePath);
                     string pdfJsonExtractionName = $"{pdfName}.Extraction.json";
 
                     var pdf = await File.ReadAllBytesAsync(pdfFilePath);
@@ -166,7 +166,8 @@ namespace ModifiedExtractor
 
                         if (response.IsSuccessStatusCode)
                         {
-                            File.WriteAllText($"{pdfName}.Response.json", await response.Content.ReadAsStringAsync());
+                            string responseFileName = $"{pdfName}.Response.json";
+                            File.WriteAllText(responseFileName, await response.Content.ReadAsStringAsync());
 
                             using (var responseStream = await response.Content.ReadAsStreamAsync())
                             {
