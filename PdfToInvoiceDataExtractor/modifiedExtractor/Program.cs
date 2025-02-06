@@ -29,7 +29,6 @@ namespace ModifiedExtractor
 
             // Construct the base URI without query parameters
             string baseUri = $"{endpoint}openai/deployments/{modelDeployment}/chat/completions";
-
             var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
             {
                 ExcludeEnvironmentCredential = true,
@@ -91,8 +90,8 @@ namespace ModifiedExtractor
                     }
 
                     var pdfImageFiles = new List<string>();
-
                     var count = 0;
+
                     foreach (var pageImageGroup in pageImageGroups)
                     {
                         var pdfImageName = $"{pdfName}.Part_{count}.jpg";
@@ -107,6 +106,7 @@ namespace ModifiedExtractor
                             canvas.DrawBitmap(pageImage, 0, currentHeight);
                             currentHeight += pageImage.Height;
                         }
+
                         using (var stitchedFileStream = new FileStream(pdfImageName, FileMode.Create, FileAccess.Write))
                         {
                             stitchedImage.Encode(stitchedFileStream, SKEncodedImageFormat.Jpeg, 100);
@@ -117,11 +117,12 @@ namespace ModifiedExtractor
                         Console.WriteLine($"Saved image to {pdfImageName}");
                     }
 
-                    var userPromptParts = new List<JsonNode>{
+                    var userPromptParts = new List<JsonNode>
+                    {
                         new JsonObject
                         {
                             { "type", "text" },
-                            { "text", $"Extract the data from this document. If a value is not present, provide null. Use the following structure:{JsonSerializer.Serialize(Metadata.Empty)}" }
+                            { "text", $"Extract the data from this document. If a value is not present, provide null. Use the following structure: {JsonSerializer.Serialize(Metadata.Empty)}" }
                         }
                     };
 
@@ -149,7 +150,7 @@ namespace ModifiedExtractor
                                 new JsonObject
                                 {
                                     { "role", "user" },
-                                    { "content", new JsonArray(userPromptParts.ToArray())}
+                                    { "content", new JsonArray(userPromptParts.ToArray()) }
                                 }
                             }
                         },
@@ -191,6 +192,7 @@ namespace ModifiedExtractor
                                 {
                                     // Access the message content dynamically
                                     JsonElement jsonElement = jsonDoc.RootElement;
+
                                     if (jsonElement.TryGetProperty("choices", out JsonElement choices) &&
                                         choices.GetArrayLength() > 0 &&
                                         choices[0].TryGetProperty("message", out JsonElement message) &&
@@ -198,17 +200,36 @@ namespace ModifiedExtractor
                                     {
                                         string messageContent = content.GetString();
 
-                                        // Output the message content
-                                        File.WriteAllText(Path.Combine(outputFolderPath, pdfJsonExtractionName), messageContent);
-                                        Console.WriteLine($"{Path.Combine(outputFolderPath, pdfJsonExtractionName)} has been created with the content from the response from the OpenAI API.");
+                                        // Clean up the message content
+                                        string cleanedMessageContent = messageContent.Trim(new[] { ' ', '\n', '\r' });
 
-                                        if (messageContent != null)
+                                        // Remove "json" prefix if present
+                                        if (cleanedMessageContent.StartsWith("json"))
                                         {
-                                            metadata = JsonSerializer.Deserialize<Metadata>(messageContent);
+                                            cleanedMessageContent = cleanedMessageContent.Substring(4).Trim();
+                                        }
+
+                                        // Validate JSON structure
+                                        if (!cleanedMessageContent.StartsWith("{") || !cleanedMessageContent.EndsWith("}"))
+                                        {
+                                            Console.WriteLine("Invalid JSON structure in response.");
+                                            metadata = Metadata.Empty;
                                         }
                                         else
                                         {
-                                            Console.WriteLine("Received null response content from the API.");
+                                            try
+                                            {
+                                                metadata = JsonSerializer.Deserialize<Metadata>(cleanedMessageContent);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                Console.WriteLine($"Error deserializing JSON: {ex.Message}");
+                                                metadata = Metadata.Empty;
+                                            }
+
+                                            // Write cleaned content to file
+                                            File.WriteAllText(Path.Combine(outputFolderPath, pdfJsonExtractionName), cleanedMessageContent);
+                                            Console.WriteLine($"{Path.Combine(outputFolderPath, pdfJsonExtractionName)} has been created with the content from the response from the OpenAI API.");
                                         }
                                     }
                                     else
