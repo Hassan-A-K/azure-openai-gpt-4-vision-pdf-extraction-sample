@@ -45,7 +45,7 @@ param disableLocalAuth bool = true
 @description('Role assignments to create for the OpenAI resource.')
 param roleAssignments roleAssignmentInfo[] = []
 
-resource openAI 'Microsoft.CognitiveServices/accounts@2023-10-01-preview' = {
+resource openAI 'Microsoft.CognitiveServices/accounts@2023-10-01-' = {
   name: name
   location: location
   tags: tags

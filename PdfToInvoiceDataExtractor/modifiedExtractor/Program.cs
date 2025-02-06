@@ -25,7 +25,7 @@ namespace ModifiedExtractor
 
             var endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT");
             var modelDeployment = Environment.GetEnvironmentVariable("AZURE_OPENAI_COMPLETION_MODEL_DEPLOYMENT_NAME");
-            var apiVersion = "2024-03-01-preview";
+            var apiVersion = "2024-08-06";
 
             // Construct the base URI without query parameters
             string baseUri = $"{endpoint}openai/deployments/{modelDeployment}/chat/completions";

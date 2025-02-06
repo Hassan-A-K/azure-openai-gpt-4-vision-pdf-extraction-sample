@@ -17,8 +17,8 @@ param tags object = {}
 
 @description('Principal ID of the user that will be granted access to the OpenAI service.')
 param userPrincipalId string
-@description('Primary location for the OpenAI service. Default is swedencentral for GPT-4o support.')
-param openAILocation string = 'swedencentral'
+@description('Primary location for the OpenAI service. Default is canadaeast for GPT-4o support.')
+param openAILocation string = 'canadaeast'
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var roles = loadJsonContent('./roles.json')
@@ -61,11 +61,11 @@ module openAI './ai_ml/openai.bicep' = {
         model: {
           format: 'OpenAI'
           name: 'gpt-4o'
-          version: '2024-05-13'
+          version: '2024-08-06'
         }
         sku: {
           name: 'Standard'
-          capacity: 8
+          capacity: 100
         }
       }
     ]
