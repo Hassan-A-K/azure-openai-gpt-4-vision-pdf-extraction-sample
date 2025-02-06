@@ -121,7 +121,7 @@ namespace ModifiedExtractor
                         new JsonObject
                         {
                             { "type", "text" },
-                            { "text", $"Extract the data from this invoice. If a value is not present, provide null. Reasons may overlap multiple lines, arrows indicate which reason relates to which line item. Use the following structure:{JsonSerializer.Serialize(InvoiceData.Empty)}" }
+                            { "text", $"Extract the data from this document. If a value is not present, provide null. Use the following structure:{JsonSerializer.Serialize(Metadata.Empty)}" }
                         }
                     };
 
@@ -164,7 +164,7 @@ namespace ModifiedExtractor
                         WriteIndented = true
                     });
 
-                    var invoiceData = InvoiceData.Empty;
+                    var metadata = Metadata.Empty;
 
                     using (HttpClient httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(10) })
                     {
@@ -204,7 +204,7 @@ namespace ModifiedExtractor
 
                                         if (messageContent != null)
                                         {
-                                            invoiceData = JsonSerializer.Deserialize<InvoiceData>(messageContent);
+                                            metadata = JsonSerializer.Deserialize<Metadata>(messageContent);
                                         }
                                         else
                                         {
@@ -237,70 +237,38 @@ namespace ModifiedExtractor
             }
         }
 
-        public class InvoiceData
+        public class Metadata
         {
-            public string? InvoiceNumber { get; set; }
-            public string? PurchaseOrderNumber { get; set; }
-            public string? CustomerName { get; set; }
-            public string? CustomerAddress { get; set; }
-            public DateTime? DeliveryDate { get; set; }
-            public DateTime? PayableBy { get; set; }
-            public IEnumerable<InvoiceDataProduct>? Products { get; set; }
-            public IEnumerable<InvoiceDataProduct>? Returns { get; set; }
-            public double? TotalQuantity { get; set; }
-            public double? TotalPrice { get; set; }
-            public IEnumerable<InvoiceDataSignature>? ProductsSignatures { get; set; }
-            public IEnumerable<InvoiceDataSignature>? ReturnsSignatures { get; set; }
+            public string? FileName { get; set; }
+            public string? DocumentTitle { get; set; }
+            public DateTime? DateOfDocument { get; set; }
+            public string? DocumentRevision { get; set; }
+            public string? DocumentType { get; set; }
+            public string? Discipline { get; set; }
+            public string? LegacyNumber { get; set; }
+            public string? Equipment { get; set; }
+            public string? SubEquipment { get; set; }
+            public string? TagNumber { get; set; }
+            public string? ProjectIDAFENumberFromFolder { get; set; }
+            public string? FacilityCode { get; set; }
+            public string? ThirdPartyName { get; set; }
 
-            public static InvoiceData Empty => new()
+            public static Metadata Empty => new()
             {
-                InvoiceNumber = string.Empty,
-                PurchaseOrderNumber = string.Empty,
-                CustomerName = string.Empty,
-                CustomerAddress = string.Empty,
-                DeliveryDate = DateTime.MinValue,
-                Products =
-                    new List<InvoiceDataProduct> { new() { Id = string.Empty, Description = string.Empty, UnitPrice = 0.0, Quantity = 0.0, Total = 0.0 } },
-                Returns =
-                    new List<InvoiceDataProduct> { new() { Id = string.Empty, Quantity = 0.0, Reason = string.Empty } },
-                TotalQuantity = 0,
-                TotalPrice = 0,
-                ProductsSignatures = new List<InvoiceDataSignature>
-                {
-                    new()
-                    {
-                        Type = string.Empty,
-                        Name = string.Empty,
-                        IsSigned = false
-                    }
-                },
-                ReturnsSignatures = new List<InvoiceDataSignature>
-                {
-                    new()
-                    {
-                        Type = string.Empty,
-                        Name = string.Empty,
-                        IsSigned = false
-                    }
-                }
+                FileName = string.Empty,
+                DocumentTitle = string.Empty,
+                DateOfDocument = null,
+                DocumentRevision = string.Empty,
+                DocumentType = string.Empty,
+                Discipline = string.Empty,
+                LegacyNumber = string.Empty,
+                Equipment = string.Empty,
+                SubEquipment = string.Empty,
+                TagNumber = string.Empty,
+                ProjectIDAFENumberFromFolder = string.Empty,
+                FacilityCode = string.Empty,
+                ThirdPartyName = string.Empty
             };
-
-            public class InvoiceDataProduct
-            {
-                public string? Id { get; set; }
-                public string? Description { get; set; }
-                public double? UnitPrice { get; set; }
-                public double Quantity { get; set; }
-                public double? Total { get; set; }
-                public string? Reason { get; set; }
-            }
-
-            public class InvoiceDataSignature
-            {
-                public string? Type { get; set; }
-                public string? Name { get; set; }
-                public bool? IsSigned { get; set; }
-            }
         }
     }
 }
