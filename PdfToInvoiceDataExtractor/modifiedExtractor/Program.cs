@@ -204,9 +204,13 @@ namespace ModifiedExtractor
                                         string cleanedMessageContent = messageContent.Trim(new[] { ' ', '\n', '\r' });
 
                                         // Remove "json" prefix if present
-                                        if (cleanedMessageContent.StartsWith("json"))
+                                        if (cleanedMessageContent.StartsWith("```json"))
                                         {
-                                            cleanedMessageContent = cleanedMessageContent.Substring(4).Trim();
+                                            cleanedMessageContent = cleanedMessageContent.Substring(7).Trim();
+                                        }
+                                        if (cleanedMessageContent.EndsWith("```"))
+                                        {
+                                            cleanedMessageContent = cleanedMessageContent.Substring(0, cleanedMessageContent.Length - 3).Trim();
                                         }
 
                                         // Validate JSON structure
@@ -262,7 +266,7 @@ namespace ModifiedExtractor
         {
             public string? FileName { get; set; }
             public string? DocumentTitle { get; set; }
-            public DateTime? DateOfDocument { get; set; }
+            public string? DateOfDocument { get; set; } // Changed from DateTime? to string
             public string? DocumentRevision { get; set; }
             public string? DocumentType { get; set; }
             public string? Discipline { get; set; }
