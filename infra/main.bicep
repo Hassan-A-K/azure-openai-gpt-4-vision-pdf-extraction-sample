@@ -61,7 +61,7 @@ module openAI './ai_ml/openai.bicep' = {
         model: {
           format: 'OpenAI'
           name: 'gpt-4o'
-          version: '2024-08-09'
+          version: '2024-05-13'
         }
         sku: {
           name: 'Standard'
