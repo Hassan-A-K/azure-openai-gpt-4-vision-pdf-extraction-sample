@@ -214,31 +214,55 @@ namespace ModifiedExtractor
                                         }
 
                                         // Validate JSON structure
-                                        if (!cleanedMessageContent.StartsWith("{") || !cleanedMessageContent.EndsWith("}"))
-                                        {
-                                            Console.WriteLine("Invalid JSON structure in response.");
-                                            metadata = Metadata.Empty;
-                                        }
-                                        else
+                                        if (cleanedMessageContent.StartsWith("{") && cleanedMessageContent.EndsWith("}"))
                                         {
                                             try
                                             {
-                                                metadata = JsonSerializer.Deserialize<Metadata>(cleanedMessageContent);
+                                                // Parse the JSON content into a dictionary
+                                                var root = JsonSerializer.Deserialize<Dictionary<string, object>>(cleanedMessageContent);
+
+                                                // Create a new dictionary to ensure FileName is first
+                                                var modifiedRoot = new Dictionary<string, object>
+                                                {
+                                                    { "FileName", pdfName }
+                                                };
+
+                                                // Add all other properties from the original root
+                                                foreach (var kvp in root)
+                                                {
+                                                    modifiedRoot[kvp.Key] = kvp.Value;
+                                                }
+
+                                                // Serialize back to a JSON string with indentation
+                                                var options = new JsonSerializerOptions { WriteIndented = true };
+                                                string modifiedJson = JsonSerializer.Serialize(modifiedRoot, options);
+
+                                                // Write the modified JSON to file
+                                                File.WriteAllText(Path.Combine(outputFolderPath, pdfJsonExtractionName), modifiedJson);
+
+                                                Console.WriteLine($"{Path.Combine(outputFolderPath, pdfJsonExtractionName)} has been created with the content from the response from the OpenAI API.");
                                             }
                                             catch (Exception ex)
                                             {
-                                                Console.WriteLine($"Error deserializing JSON: {ex.Message}");
-                                                metadata = Metadata.Empty;
+                                                Console.WriteLine($"Error modifying JSON: {ex.Message}");
+                                                // Write the original cleaned content if modification fails
+                                                File.WriteAllText(Path.Combine(outputFolderPath, pdfJsonExtractionName), cleanedMessageContent);
                                             }
-
-                                            // Write cleaned content to file
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Invalid JSON structure in response.");
+                                            // Write the original cleaned content if it's not a valid JSON object
                                             File.WriteAllText(Path.Combine(outputFolderPath, pdfJsonExtractionName), cleanedMessageContent);
-                                            Console.WriteLine($"{Path.Combine(outputFolderPath, pdfJsonExtractionName)} has been created with the content from the response from the OpenAI API.");
                                         }
                                     }
                                     else
                                     {
                                         Console.WriteLine("Unexpected JSON structure in response from API.");
+                                        // Write an empty metadata object if the expected structure is not found
+                                        var options = new JsonSerializerOptions { WriteIndented = true };
+                                        string emptyJson = JsonSerializer.Serialize(Metadata.Empty, options);
+                                        File.WriteAllText(Path.Combine(outputFolderPath, pdfJsonExtractionName), emptyJson);
                                     }
                                 }
                             }
@@ -246,6 +270,10 @@ namespace ModifiedExtractor
                         else
                         {
                             Console.WriteLine(await response.Content.ReadAsStringAsync());
+                            // Write an empty metadata object if the API request fails
+                            var options = new JsonSerializerOptions { WriteIndented = true };
+                            string emptyJson = JsonSerializer.Serialize(Metadata.Empty, options);
+                            File.WriteAllText(Path.Combine(outputFolderPath, pdfJsonExtractionName), emptyJson);
                         }
                     }
 
@@ -264,9 +292,8 @@ namespace ModifiedExtractor
 
         public class Metadata
         {
-            public string? FileName { get; set; }
             public string? DocumentTitle { get; set; }
-            public string? DateOfDocument { get; set; } // Changed from DateTime? to string
+            public string? DateOfDocument { get; set; }
             public string? DocumentRevision { get; set; }
             public string? DocumentType { get; set; }
             public string? Discipline { get; set; }
@@ -280,7 +307,6 @@ namespace ModifiedExtractor
 
             public static Metadata Empty => new()
             {
-                FileName = string.Empty,
                 DocumentTitle = string.Empty,
                 DateOfDocument = null,
                 DocumentRevision = string.Empty,
