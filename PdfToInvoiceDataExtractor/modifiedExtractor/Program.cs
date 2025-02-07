@@ -60,7 +60,7 @@ namespace ModifiedExtractor
                     Directory.CreateDirectory(outputFolderPath);
                 }
 
-                string systemPromptFilePath = Path.Combine(currentDirectory, "DCPromptsForAzureOpenAI.txt");
+                string systemPromptFilePath = Path.Combine(currentDirectory, "DCPromptsForAzureOpenAI copy.txt");
                 if (!File.Exists(systemPromptFilePath))
                 {
                     Console.WriteLine($"File 'DCPromptsForAzureOpenAI.txt' does not exist in the current directory.");
@@ -133,7 +133,12 @@ namespace ModifiedExtractor
                         userPromptParts.Add(new JsonObject
                         {
                             { "type", "image_url" },
-                            { "image_url", new JsonObject { { "url", $"data:image/jpeg;base64,{base64Image}" } } }
+                            { "image_url", new JsonObject 
+                                { 
+                                    { "url", $"data:image/jpeg;base64,{base64Image}" },
+                                    { "detail", "high" } // Adding the detail property
+                                } 
+                            }
                         });
                     }
 
@@ -292,33 +297,39 @@ namespace ModifiedExtractor
 
         public class Metadata
         {
-            public string? DocumentTitle { get; set; }
-            public string? DateOfDocument { get; set; }
-            public string? DocumentRevision { get; set; }
-            public string? DocumentType { get; set; }
-            public string? Discipline { get; set; }
-            public string? LegacyNumber { get; set; }
-            public string? Equipment { get; set; }
-            public string? SubEquipment { get; set; }
-            public string? TagNumber { get; set; }
-            public string? ProjectIDAFENumberFromFolder { get; set; }
-            public string? FacilityCode { get; set; }
-            public string? ThirdPartyName { get; set; }
-
-            public static Metadata Empty => new()
+            public class MetadataItem
             {
-                DocumentTitle = string.Empty,
-                DateOfDocument = null,
-                DocumentRevision = string.Empty,
-                DocumentType = string.Empty,
-                Discipline = string.Empty,
-                LegacyNumber = string.Empty,
-                Equipment = string.Empty,
-                SubEquipment = string.Empty,
-                TagNumber = string.Empty,
-                ProjectIDAFENumberFromFolder = string.Empty,
-                FacilityCode = string.Empty,
-                ThirdPartyName = string.Empty
+                public string? Value { get; set; }
+                public double Confidence { get; set; }
+            }
+
+            public MetadataItem? DocumentTitle { get; set; }
+            public MetadataItem? DateOfDocument { get; set; }
+            public MetadataItem? DocumentRevision { get; set; }
+            public MetadataItem? DocumentType { get; set; }
+            public MetadataItem? Discipline { get; set; }
+            public MetadataItem? LegacyNumber { get; set; }
+            public MetadataItem? Equipment { get; set; }
+            public MetadataItem? SubEquipment { get; set; }
+            public MetadataItem? TagNumber { get; set; }
+            public MetadataItem? ProjectID_AFE { get; set; }
+            public MetadataItem? FacilityCode { get; set; }
+            public MetadataItem? ThirdPartyName { get; set; }
+
+            public static Metadata Empty => new Metadata
+            {
+                DocumentTitle = new MetadataItem { Value = null, Confidence = 0 },
+                DateOfDocument = new MetadataItem { Value = null, Confidence = 0 },
+                DocumentRevision = new MetadataItem { Value = null, Confidence = 0 },
+                DocumentType = new MetadataItem { Value = null, Confidence = 0 },
+                Discipline = new MetadataItem { Value = null, Confidence = 0 },
+                LegacyNumber = new MetadataItem { Value = null, Confidence = 0 },
+                Equipment = new MetadataItem { Value = null, Confidence = 0 },
+                SubEquipment = new MetadataItem { Value = null, Confidence = 0 },
+                TagNumber = new MetadataItem { Value = null, Confidence = 0 },
+                ProjectID_AFE = new MetadataItem { Value = null, Confidence = 0 },
+                FacilityCode = new MetadataItem { Value = null, Confidence = 0 },
+                ThirdPartyName = new MetadataItem { Value = null, Confidence = 0 },
             };
         }
     }
