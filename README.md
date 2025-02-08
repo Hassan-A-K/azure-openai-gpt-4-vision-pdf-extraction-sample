@@ -35,9 +35,6 @@ This approach takes advantage of the GPT-4o model's ability to understand the st
 
 ## Getting Started
 
-> [!NOTE]
-> This sample comes prepared with a [Invoice_1.pdf](./Invoice_1.pdf) file that you can use to test the GPT-4o model. You can also use your own PDF files to test the model.
-
 To deploy the infrastructure and test PDF data extraction using GPT-4o, you need to:
 
 ### Prerequisites
