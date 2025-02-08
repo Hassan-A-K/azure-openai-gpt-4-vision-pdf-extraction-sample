@@ -307,7 +307,11 @@ namespace ModifiedExtractor
             public MetadataItem? DateOfDocument { get; set; }
             public MetadataItem? DocumentRevision { get; set; }
             public MetadataItem? DocumentType { get; set; }
+            public MetadataItem? DocumentType2 { get; set; }
+            public MetadataItem? DocumentType3 { get; set; }
             public MetadataItem? Discipline { get; set; }
+            public MetadataItem? Discipline2 { get; set; }
+            public MetadataItem? Discipline3 { get; set; }
             public MetadataItem? LegacyNumber { get; set; }
             public MetadataItem? Equipment { get; set; }
             public MetadataItem? SubEquipment { get; set; }
@@ -322,7 +326,11 @@ namespace ModifiedExtractor
                 DateOfDocument = new MetadataItem { Value = null, Confidence = 0 },
                 DocumentRevision = new MetadataItem { Value = null, Confidence = 0 },
                 DocumentType = new MetadataItem { Value = null, Confidence = 0 },
+                DocumentType2 = new MetadataItem { Value = null, Confidence = 0 },
+                DocumentType3 = new MetadataItem { Value = null, Confidence = 0 },
                 Discipline = new MetadataItem { Value = null, Confidence = 0 },
+                Discipline2 = new MetadataItem { Value = null, Confidence = 0 },
+                Discipline3 = new MetadataItem { Value = null, Confidence = 0 },
                 LegacyNumber = new MetadataItem { Value = null, Confidence = 0 },
                 Equipment = new MetadataItem { Value = null, Confidence = 0 },
                 SubEquipment = new MetadataItem { Value = null, Confidence = 0 },
