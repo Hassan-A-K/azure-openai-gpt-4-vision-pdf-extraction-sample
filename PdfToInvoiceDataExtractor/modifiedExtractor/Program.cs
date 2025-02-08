@@ -10,7 +10,7 @@ using Azure.AI.OpenAI;
 using Azure.Core;
 using Azure.Identity;
 using DotNetEnv;
-using PDFtoImage;
+using SautinSoft; // Correct namespace
 using SkiaSharp;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -77,44 +77,62 @@ namespace ModifiedExtractor
                     string pdfJsonExtractionName = $"{pdfName}.Extraction.json";
                     string responseFileName = $"{pdfName}.Response.json";
 
-                    var pdf = await File.ReadAllBytesAsync(pdfFilePath);
-                    var pageImages = PDFtoImage.Conversion.ToImages(pdf);
+                    PdfFocus f = new PdfFocus();
+                    f.OpenPdf(pdfFilePath);
 
-                    double maxImageCount = 25;
-                    int maxSize = (int)Math.Ceiling(pageImages.Count() / maxImageCount);
-                    var pageImageGroups = new List<List<SKBitmap>>();
-                    for (int i = 0; i < pageImages.Count(); i += maxSize)
+                    if (f.PageCount > 0)
                     {
-                        var pageImageGroup = pageImages.Skip(i).Take(maxSize).ToList();
-                        pageImageGroups.Add(pageImageGroup);
+                        // Set 300 DPI for high-quality images
+                        f.ImageOptions.Dpi = 900;
                     }
 
-                    var pdfImageFiles = new List<string>();
-                    var count = 0;
+                    double maxImageCount = 25;
+                    int maxSize = (int)Math.Ceiling(f.PageCount / maxImageCount);
+                    var pageImageFiles = new List<string>();
+                    int count = 0;
 
-                    foreach (var pageImageGroup in pageImageGroups)
+                    for (int pageIndex = 0; pageIndex < f.PageCount; pageIndex += maxSize)
                     {
-                        var pdfImageName = $"{pdfName}.Part_{count}.jpg";
+                        var pageImageGroup = new List<SKBitmap>();
+                        int pageCountToConvert = Math.Min(maxSize, f.PageCount - pageIndex);
 
-                        int totalHeight = pageImageGroup.Sum(image => image.Height);
-                        int width = pageImageGroup.Max(image => image.Width);
-                        var stitchedImage = new SKBitmap(width, totalHeight);
-                        var canvas = new SKCanvas(stitchedImage);
-                        int currentHeight = 0;
-                        foreach (var pageImage in pageImageGroup)
+                        for (int i = 0; i < pageCountToConvert; i++)
                         {
-                            canvas.DrawBitmap(pageImage, 0, currentHeight);
-                            currentHeight += pageImage.Height;
+                            f.ImageOptions.PageIndex = pageIndex + i;
+                            string tempPngFilePath = Path.Combine(Path.GetTempPath(), $"{pdfName}.Part_{count}_{i}.png");
+                            if (f.ToImage(tempPngFilePath) == 0)
+                            {
+                                using (var stream = new FileStream(tempPngFilePath, FileMode.Open, FileAccess.Read))
+                                {
+                                    pageImageGroup.Add(SKBitmap.Decode(stream));
+                                }
+                            }
                         }
 
-                        using (var stitchedFileStream = new FileStream(pdfImageName, FileMode.Create, FileAccess.Write))
+                        if (pageImageGroup.Count > 0)
                         {
-                            stitchedImage.Encode(stitchedFileStream, SKEncodedImageFormat.Jpeg, 100);
-                        }
-                        pdfImageFiles.Add(pdfImageName);
-                        count++;
+                            var pdfImageName = $"{pdfName}.Part_{count}.png"; // Change file extension to .png
 
-                        Console.WriteLine($"Saved image to {pdfImageName}");
+                            int totalHeight = pageImageGroup.Sum(image => image.Height);
+                            int width = pageImageGroup.Max(image => image.Width);
+                            var stitchedImage = new SKBitmap(width, totalHeight);
+                            var canvas = new SKCanvas(stitchedImage);
+                            int currentHeight = 0;
+                            foreach (var pageImage in pageImageGroup)
+                            {
+                                canvas.DrawBitmap(pageImage, 0, currentHeight);
+                                currentHeight += pageImage.Height;
+                            }
+
+                            using (var stitchedFileStream = new FileStream(pdfImageName, FileMode.Create, FileAccess.Write))
+                            {
+                                stitchedImage.Encode(stitchedFileStream, SKEncodedImageFormat.Png, 100); // Change to Png format
+                            }
+                            pageImageFiles.Add(pdfImageName);
+                            count++;
+
+                            Console.WriteLine($"Saved image to {pdfImageName}");
+                        }
                     }
 
                     var userPromptParts = new List<JsonNode>
@@ -126,7 +144,7 @@ namespace ModifiedExtractor
                         }
                     };
 
-                    foreach (var pdfImageFile in pdfImageFiles)
+                    foreach (var pdfImageFile in pageImageFiles)
                     {
                         var imageBytes = await File.ReadAllBytesAsync(pdfImageFile);
                         var base64Image = Convert.ToBase64String(imageBytes);
@@ -135,7 +153,7 @@ namespace ModifiedExtractor
                             { "type", "image_url" },
                             { "image_url", new JsonObject 
                                 { 
-                                    { "url", $"data:image/jpeg;base64,{base64Image}" },
+                                    { "url", $"data:image/png;base64,{base64Image}" }, // Change MIME type to image/png
                                     { "detail", "high" } // Adding the detail property
                                 } 
                             }
@@ -283,7 +301,7 @@ namespace ModifiedExtractor
                     }
 
                     // Clean up generated images
-                    foreach (var imageFile in pdfImageFiles)
+                    foreach (var imageFile in pageImageFiles)
                     {
                         File.Delete(imageFile);
                     }
