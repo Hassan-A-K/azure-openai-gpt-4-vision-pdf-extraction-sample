@@ -60,7 +60,7 @@ namespace ModifiedExtractor
                     Directory.CreateDirectory(outputFolderPath);
                 }
 
-                string systemPromptFilePath = Path.Combine(currentDirectory, "DCPromptsForAzureOpenAI copy.txt");
+                string systemPromptFilePath = Path.Combine(currentDirectory, "DCPromptsForAzureOpenAI Enchanced.txt");
                 if (!File.Exists(systemPromptFilePath))
                 {
                     Console.WriteLine($"File 'DCPromptsForAzureOpenAI.txt' does not exist in the current directory.");
@@ -82,7 +82,7 @@ namespace ModifiedExtractor
 
                     if (f.PageCount > 0)
                     {
-                        // Set 300 DPI for high-quality images
+                        // Set DPI for high-quality images
                         f.ImageOptions.Dpi = 900;
                     }
 
