@@ -13,11 +13,11 @@ You will extract the following metadata fields from each document:
 - **Date of Document**: Identify the latest date in the document. If unavailable, use document properties.  
 - **Document Revision**: Extract the revision/version number. If absent, default to `"0"`.  
 - **Document Type**: Determine the document type based on the context of the document and predefined mappings.  
-- **Document Type2**: If the document seems to intersect with more than one Doucment Type add it here.
-- **Document Type3**: If the document seems to intersect with more than two Doucment Type's add it here.  
+- **Document Type2**: If the document aligns with more than one Document Type, specify the second most relevant type; otherwise, leave blank.
+- **Document Type3**: If the document aligns with more than two Document Types, specify the third most relevant type; otherwise, leave blank.
 - **Discipline**: Assign the correct engineering discipline based on the context of the document and mappings.  
-- **Discipline2**: If the document seems most probably intersect with more than one Discipline add the 2nd most relevant on here other wise leave blank.
-- **Discipline3**: If the document seems most probably intersect with more than two Discipline add the 3rd most relevant on here other wise leave blank.
+- **Discipline2**: If the document aligns with multiple disciplines, specify the second most relevant one; otherwise, leave blank.
+- **Discipline3**: If the document aligns with more than two disciplines, specify the third most relevant one; otherwise, leave blank.
 - **Legacy Number**: Extract any legacy document identifier.  
 - **Equipment & Sub-Equipment**: Identify equipment and sub-equipment based on extracted tag mappings.  
 - **Tag Numbers**: Extract and list tag numbers following specific formats (see Section 3).  
