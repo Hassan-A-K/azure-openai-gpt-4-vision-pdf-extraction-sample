@@ -405,3 +405,5 @@ FodyWeavers.xsd
 # Files
 Demo Files/
 Output/
+
+.DS_Store
