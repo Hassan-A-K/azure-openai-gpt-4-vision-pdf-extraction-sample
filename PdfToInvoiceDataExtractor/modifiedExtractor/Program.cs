@@ -83,7 +83,7 @@ namespace ModifiedExtractor
                     if (f.PageCount > 0)
                     {
                         // Set DPI for high-quality images
-                        f.ImageOptions.Dpi = 900;
+                        f.ImageOptions.Dpi = 700;
                     }
 
                     double maxImageCount = 25;
