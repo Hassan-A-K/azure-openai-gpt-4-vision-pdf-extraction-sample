@@ -60,7 +60,7 @@ namespace ModifiedExtractor
                     Directory.CreateDirectory(outputFolderPath);
                 }
 
-                string systemPromptFilePath = Path.Combine(currentDirectory, "DCPromptsForAzureOpenAI Enchanced.txt");
+                string systemPromptFilePath = Path.Combine(currentDirectory, "DCPromptsForAzureOpenAI Enchanced 2.txt");
                 if (!File.Exists(systemPromptFilePath))
                 {
                     Console.WriteLine($"File 'DCPromptsForAzureOpenAI.txt' does not exist in the current directory.");
@@ -317,8 +317,10 @@ namespace ModifiedExtractor
         {
             public class MetadataItem
             {
-                public string? Value { get; set; }
+                public string? Reasoning { get; set; }
+                public string? Citation { get; set; }
                 public double Confidence { get; set; }
+                public string? Value { get; set; }
             }
 
             public MetadataItem? DocumentTitle { get; set; }
@@ -340,22 +342,22 @@ namespace ModifiedExtractor
 
             public static Metadata Empty => new Metadata
             {
-                DocumentTitle = new MetadataItem { Value = null, Confidence = 0 },
-                DateOfDocument = new MetadataItem { Value = null, Confidence = 0 },
-                DocumentRevision = new MetadataItem { Value = null, Confidence = 0 },
-                DocumentType = new MetadataItem { Value = null, Confidence = 0 },
-                DocumentType2 = new MetadataItem { Value = null, Confidence = 0 },
-                DocumentType3 = new MetadataItem { Value = null, Confidence = 0 },
-                Discipline = new MetadataItem { Value = null, Confidence = 0 },
-                Discipline2 = new MetadataItem { Value = null, Confidence = 0 },
-                Discipline3 = new MetadataItem { Value = null, Confidence = 0 },
-                LegacyNumber = new MetadataItem { Value = null, Confidence = 0 },
-                Equipment = new MetadataItem { Value = null, Confidence = 0 },
-                SubEquipment = new MetadataItem { Value = null, Confidence = 0 },
-                TagNumber = new MetadataItem { Value = null, Confidence = 0 },
-                ProjectID_AFE = new MetadataItem { Value = null, Confidence = 0 },
-                FacilityCode = new MetadataItem { Value = null, Confidence = 0 },
-                ThirdPartyName = new MetadataItem { Value = null, Confidence = 0 },
+                DocumentTitle = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null },
+                DateOfDocument = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null },
+                DocumentRevision = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null },
+                DocumentType = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null },
+                DocumentType2 = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null },
+                DocumentType3 = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null },
+                Discipline = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null },
+                Discipline2 = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null },
+                Discipline3 = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null },
+                LegacyNumber = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null },
+                Equipment = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null },
+                SubEquipment = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null },
+                TagNumber = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null },
+                ProjectID_AFE = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null },
+                FacilityCode = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null },
+                ThirdPartyName = new MetadataItem { Reasoning = null, Citation = null, Confidence = 0, Value = null }
             };
         }
     }
