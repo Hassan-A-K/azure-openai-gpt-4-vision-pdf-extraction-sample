@@ -46,7 +46,7 @@ namespace ModifiedExtractor
 
                 string currentDirectory = Directory.GetCurrentDirectory();
                 string demoFilesPath = Path.Combine(currentDirectory, "Demo Files");
-                string diagramsFolderPath = Path.Combine(demoFilesPath, "Diagrams");
+                string diagramsFolderPath = Path.Combine(demoFilesPath, "");
 
                 if (!Directory.Exists(diagramsFolderPath))
                 {
@@ -60,7 +60,7 @@ namespace ModifiedExtractor
                     Directory.CreateDirectory(outputFolderPath);
                 }
 
-                string systemPromptFilePath = Path.Combine(currentDirectory, "DCPromptsForAzureOpenAI Enchanced 2.txt");
+                string systemPromptFilePath = Path.Combine(currentDirectory, "DCPromptsForAzureOpenAI Enchanced 3.txt");
                 if (!File.Exists(systemPromptFilePath))
                 {
                     Console.WriteLine($"File 'DCPromptsForAzureOpenAI.txt' does not exist in the current directory.");
@@ -83,7 +83,7 @@ namespace ModifiedExtractor
                     if (f.PageCount > 0)
                     {
                         // Set DPI for high-quality images
-                        f.ImageOptions.Dpi = 700;
+                        f.ImageOptions.Dpi = 300;
                     }
 
                     double maxImageCount = 25;

@@ -13,17 +13,15 @@ You will extract the following metadata fields from each document:
 - **Date of Document**: Identify the latest date in the document. If unavailable, use document properties.  
 - **Document Revision**: Extract the revision/version number. If absent, default to `"0"`.  
 - **Document Type**: Determine the document type based on the context of the document and predefined mappings.  
-- **Document Type2**: If the document aligns with more than one Document Type, specify the second most relevant type; otherwise, leave blank.
-- **Document Type3**: If the document aligns with more than two Document Types, specify the third most relevant type; otherwise, leave blank.
 - **Discipline**: Assign the correct engineering discipline based on the context of the document and mappings.  
-- **Discipline2**: If the document aligns with multiple disciplines, specify the second most relevant one; otherwise, leave blank.
-- **Discipline3**: If the document aligns with more than two disciplines, specify the third most relevant one; otherwise, leave blank.
 - **Legacy Number**: Extract any legacy document identifier.  
 - **Equipment & Sub-Equipment**: Identify equipment and sub-equipment based on extracted tag mappings.  
 - **Tag Numbers**: Extract and list tag numbers following specific formats (see Section 3).  
 - **Project ID (AFE Number)**: Extract from folder structure if not explicitly stated in the document.  
 - **Facility Code**: Identify from document content or folder structure.  
-- **Third Party Name**: Extract any referenced external organizations/governments.  
+- **Third Party Name**: Extract any referenced external organizations/governments.
+- **Document Type2**: If the document aligns with more than one Document Type, specify the second most relevant type; otherwise, leave blank.
+- **Discipline2**: If the document aligns with multiple disciplines, specify the second most relevant one; otherwise, leave blank.
 
 ---
 
@@ -201,35 +199,11 @@ The extracted metadata should be structured in JSON format as follows:
     "value": "Calculations - Stress Analysis", 
     "confidence": 0.75 
   },
-  "Document Type2": {
-    "reasoning": "No additional document types were identified based on the content.",
-    "citation": null,
-    "value": "", 
-    "confidence": 1.0 
-  },
-  "Document Type3": {
-    "reasoning": "No third document type was relevant to this document.",
-    "citation": null,
-    "value": "", 
-    "confidence": 1.0 
-  },
   "Discipline": {
     "reasoning": "Assigned based on the content related to mechanical stress analysis.",
     "citation": "Section 3, Calculations",
     "value": "Mechanical", 
     "confidence": 0.92 
-  },
-  "Discipline2": {
-    "reasoning": "No secondary discipline was identified for this document.",
-    "citation": null,
-    "value": "", 
-    "confidence": 1.0 
-  },
-  "Discipline3": {
-    "reasoning": "No tertiary discipline was relevant to this document.",
-    "citation": null,
-    "value": "", 
-    "confidence": 1.0 
   },
   "Legacy Number": {
     "reasoning": "Extracted from the footer of the document.",
@@ -272,6 +246,18 @@ The extracted metadata should be structured in JSON format as follows:
     "citation": "Page 4, Consultants List",
     "value": "Engineering Corp Ltd.", 
     "confidence": 0.82 
+  },
+  "Document Type2": {
+    "reasoning": "No additional document types were identified based on the content.",
+    "citation": null,
+    "value": "", 
+    "confidence": 1.0 
+  },
+  "Discipline2": {
+    "reasoning": "No secondary discipline was identified for this document.",
+    "citation": null,
+    "value": "", 
+    "confidence": 1.0 
   }
 }
 
