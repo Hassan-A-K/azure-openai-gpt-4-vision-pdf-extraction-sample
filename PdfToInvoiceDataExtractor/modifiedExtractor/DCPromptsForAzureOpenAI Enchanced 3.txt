@@ -268,5 +268,6 @@ The extracted metadata should be structured in JSON format as follows:
 ## **6. Hints**  
 Title block in engineering documents contatins key information such as Document Name, Date, Revision, Third Party Name/Logo, look closely at it to extract the full tile, most recent date and revision.
 These files are from Moose Jaw Refinery and are owned by Gibson Energy, so do not select them as Third Party Field.
+Use the files path to help determine the Facility Code and Project ID.
 
 ---
