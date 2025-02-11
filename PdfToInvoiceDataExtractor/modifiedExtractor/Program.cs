@@ -67,15 +67,19 @@ namespace ModifiedExtractor
                     return;
                 }
 
-                string systemPrompt = await File.ReadAllTextAsync(systemPromptFilePath);
+                string baseSystemPrompt = await File.ReadAllTextAsync(systemPromptFilePath);
 
-                string[] pdfFiles = Directory.GetFiles(diagramsFolderPath, "*.pdf");
+                string[] pdfFiles = Directory.GetFiles(diagramsFolderPath, "*.pdf", SearchOption.AllDirectories);
 
                 foreach (string pdfFilePath in pdfFiles)
                 {
                     string pdfName = Path.GetFileNameWithoutExtension(pdfFilePath);
                     string pdfJsonExtractionName = $"{pdfName}.Extraction.json";
                     string responseFileName = $"{pdfName}.Response.json";
+
+                    // Append the current PDF file path to the system prompt
+                    string systemPrompt = baseSystemPrompt + $"\n\nPDF File Path:\n{pdfFilePath}";
+                    Console.WriteLine($"Path to file: {pdfFilePath}");
 
                     PdfFocus f = new PdfFocus();
                     f.OpenPdf(pdfFilePath);
