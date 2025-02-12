@@ -10,7 +10,7 @@ using Azure.AI.OpenAI;
 using Azure.Core;
 using Azure.Identity;
 using DotNetEnv;
-using SautinSoft; // Correct namespace
+using SautinSoft;
 using SkiaSharp;
 using System.Text.Json;
 using System.Text.Json.Nodes;

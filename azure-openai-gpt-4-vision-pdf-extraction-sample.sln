@@ -4,8 +4,6 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PdfToInvoiceDataExtractor", "PdfToInvoiceDataExtractor", "{519E3D0E-8CF8-91EB-93A8-F4617626F04E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfToInvoiceDataExtractor", "PdfToInvoiceDataExtractor\PdfToInvoiceDataExtractor\PdfToInvoiceDataExtractor.csproj", "{28446193-CDDB-39A2-2375-69674CA53F88}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
