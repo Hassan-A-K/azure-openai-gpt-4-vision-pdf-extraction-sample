@@ -45,6 +45,8 @@ namespace ModifiedExtractor
                 var bearerToken = credential.GetToken(new TokenRequestContext(new[] { "https://cognitiveservices.azure.com/.default" })).Token;
 
                 string currentDirectory = Directory.GetCurrentDirectory();
+                Console.WriteLine($"Current directory: {currentDirectory}");
+
                 string demoFilesPath = Path.Combine(currentDirectory, "Demo Files");
                 string diagramsFolderPath = Path.Combine(demoFilesPath, "");
 
@@ -60,10 +62,16 @@ namespace ModifiedExtractor
                     Directory.CreateDirectory(outputFolderPath);
                 }
 
-                string systemPromptFilePath = Path.Combine(currentDirectory, "DCPromptsForAzureOpenAI Enchanced 3.txt");
+                string tempImagesFolder = Path.Combine(currentDirectory, "TempImages");
+                if (!Directory.Exists(tempImagesFolder))
+                {
+                    Directory.CreateDirectory(tempImagesFolder);
+                }
+
+                string systemPromptFilePath = Path.Combine(currentDirectory, "SysPrompt", "DCPromptsForAzureOpenAI.txt");
                 if (!File.Exists(systemPromptFilePath))
                 {
-                    Console.WriteLine($"File 'DCPromptsForAzureOpenAI.txt' does not exist in the current directory.");
+                    Console.WriteLine($"File 'DCPromptsForAzureOpenAI Enhanced 3.txt' does not exist at path: {systemPromptFilePath}");
                     return;
                 }
 
@@ -103,7 +111,7 @@ namespace ModifiedExtractor
                         for (int i = 0; i < pageCountToConvert; i++)
                         {
                             f.ImageOptions.PageIndex = pageIndex + i;
-                            string tempPngFilePath = Path.Combine(Path.GetTempPath(), $"{pdfName}.Part_{count}_{i}.png");
+                            string tempPngFilePath = Path.Combine(tempImagesFolder, $"{pdfName}.Part_{count}_{i}.png");
                             if (f.ToImage(tempPngFilePath) == 0)
                             {
                                 using (var stream = new FileStream(tempPngFilePath, FileMode.Open, FileAccess.Read))
