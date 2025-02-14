@@ -45,8 +45,6 @@ namespace ModifiedExtractor
                 var bearerToken = credential.GetToken(new TokenRequestContext(new[] { "https://cognitiveservices.azure.com/.default" })).Token;
 
                 string currentDirectory = Directory.GetCurrentDirectory();
-                Console.WriteLine($"Current directory: {currentDirectory}");
-
                 string demoFilesPath = Path.Combine(currentDirectory, "Demo Files");
                 string diagramsFolderPath = Path.Combine(demoFilesPath, "");
 
@@ -68,10 +66,14 @@ namespace ModifiedExtractor
                     Directory.CreateDirectory(tempImagesFolder);
                 }
 
+                // Clear the Output and TempImages folders
+                ClearDirectory(outputFolderPath);
+                ClearDirectory(tempImagesFolder);
+
                 string systemPromptFilePath = Path.Combine(currentDirectory, "SysPrompt", "DCPromptsForAzureOpenAI.txt");
                 if (!File.Exists(systemPromptFilePath))
                 {
-                    Console.WriteLine($"File 'DCPromptsForAzureOpenAI Enhanced 3.txt' does not exist at path: {systemPromptFilePath}");
+                    Console.WriteLine($"System Prompt does not exist at path: {systemPromptFilePath}");
                     return;
                 }
 
@@ -136,14 +138,16 @@ namespace ModifiedExtractor
                                 currentHeight += pageImage.Height;
                             }
 
-                            using (var stitchedFileStream = new FileStream(pdfImageName, FileMode.Create, FileAccess.Write))
+                            // Save the stitched image in the TempImages folder
+                            string stitchedImagePath = Path.Combine(tempImagesFolder, pdfImageName);
+                            using (var stitchedFileStream = new FileStream(stitchedImagePath, FileMode.Create, FileAccess.Write))
                             {
                                 stitchedImage.Encode(stitchedFileStream, SKEncodedImageFormat.Png, 100); // Change to Png format
                             }
-                            pageImageFiles.Add(pdfImageName);
+                            pageImageFiles.Add(stitchedImagePath);
                             count++;
 
-                            Console.WriteLine($"Saved image to {pdfImageName}");
+                            Console.WriteLine($"Saved image to {stitchedImagePath}");
                         }
                     }
 
@@ -312,16 +316,43 @@ namespace ModifiedExtractor
                         }
                     }
 
-                    // Clean up generated images
+                    // Clean up generated images from TempImages folder
                     foreach (var imageFile in pageImageFiles)
                     {
                         File.Delete(imageFile);
+                        Console.WriteLine($"Deleted temporary image: {imageFile}");
                     }
                 }
+
+                // Clear the TempImages folder again after processing all PDFs
+                ClearDirectory(tempImagesFolder);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+        }
+
+        // Method to clear a directory
+        static void ClearDirectory(string directoryPath)
+        {
+            if (Directory.Exists(directoryPath))
+            {
+                string[] files = Directory.GetFiles(directoryPath);
+                foreach (string file in files)
+                {
+                    File.Delete(file);
+                    Console.WriteLine($"Deleted file: {file}");
+                }
+
+                string[] directories = Directory.GetDirectories(directoryPath);
+                foreach (string directory in directories)
+                {
+                    Directory.Delete(directory, true);
+                    Console.WriteLine($"Deleted directory: {directory}");
+                }
+
+                Console.WriteLine($"Cleared directory: {directoryPath}");
             }
         }
 
