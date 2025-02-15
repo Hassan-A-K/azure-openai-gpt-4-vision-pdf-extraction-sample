@@ -17,9 +17,9 @@ using System.Text.Json.Nodes;
 
 namespace ModifiedExtractor
 {
-    class Program
+    public class Program
     {
-        static async Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
             Env.Load("config.env");
 
