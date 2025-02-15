@@ -17,5 +17,5 @@
 
 <ItemGroup>
     <ProjectReference Include="..\modifiedExtractor\ModifiedExtractor.csproj" />
-
+</ItemGroup>
 </Project>
