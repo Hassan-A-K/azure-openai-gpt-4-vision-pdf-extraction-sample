@@ -8,7 +8,7 @@ namespace Extractor.Test
 {
     public class UnitTest1
     {
-        private readonly string outputDirectory = "Output";
+        private readonly string outputDirectory = Path.Combine("..", "..", "..", "..", "modifiedExtractor", "Output");
         private readonly string demoFilesPath = "Demo Files";
 
         private readonly string[] expectedKeys = new string[]
