@@ -9,139 +9,31 @@ namespace Extractor.Test
     public class UnitTest1
     {
         private readonly string outputDirectory = Path.Combine("..", "..", "..", "..", "modifiedExtractor", "Output");
-        private readonly string demoFilesPath = "Demo Files";
+        private readonly string demoFilesPath = Path.Combine("..", "..", "..", "..", "modifiedExtractor", "Demo Files");
+        private readonly string expectedOutputsPath = Path.Combine("..", "..", "..", "..", "Extractor.Test", "ExpectedOutputs");
 
-        private readonly string[] expectedKeys = new string[]
-        {
-            "FileName",
-            "DocumentTitle",
-            "DateOfDocument",
-            "DocumentRevision",
-            "DocumentType",
-            "DocumentType2",
-            "DocumentType3",
-            "Discipline",
-            "Discipline2",
-            "Discipline3",
-            "LegacyNumber",
-            "Equipment",
-            "SubEquipment",
-            "TagNumber",
-            "ProjectID_AFE",
-            "FacilityCode",
-            "ThirdPartyName"
-        };
+        private string[] expectedKeys;
 
-        private readonly string expectedJsonPart1 = @"
+        public UnitTest1()
         {
-          ""FileName"": ""Part 1"",
-          ""DocumentTitle"": {
-            ""Reasoning"": ""The title \u0027OPERATING INSTRUCTIONS\u0027 is prominently displayed at the top of the first page."",
-            ""Citation"": ""/Users/hak/Documents/GitHub/azure-openai-gpt-4-vision-pdf-extraction-sample/modifiedExtractor/Demo Files/Part 1.pdf"",
-            ""Confidence"": 0.9,
-            ""Value"": ""OPERATING INSTRUCTIONS""
-          },
-          ""DateOfDocument"": {
-            ""Reasoning"": ""The date \u002715.05.1992\u0027 is found at the bottom of the table of contents page."",
-            ""Citation"": ""/Users/hak/Documents/GitHub/azure-openai-gpt-4-vision-pdf-extraction-sample/modifiedExtractor/Demo Files/Part 1.pdf"",
-            ""Confidence"": 0.9,
-            ""Value"": ""15.05.1992""
-          },
-          ""DocumentRevision"": {
-            ""Reasoning"": ""No specific revision number is mentioned in the document."",
-            ""Citation"": null,
-            ""Confidence"": 0,
-            ""Value"": null
-          },
-          ""DocumentType"": {
-            ""Reasoning"": ""The document is an \u0027OPERATING INSTRUCTIONS\u0027 manual."",
-            ""Citation"": ""/Users/hak/Documents/GitHub/azure-openai-gpt-4-vision-pdf-extraction-sample/modifiedExtractor/Demo Files/Part 1.pdf"",
-            ""Confidence"": 0.9,
-            ""Value"": ""MAN - Manual""
-          },
-          ""DocumentType2"": {
-            ""Reasoning"": null,
-            ""Citation"": null,
-            ""Confidence"": 0,
-            ""Value"": null
-          },
-          ""DocumentType3"": {
-            ""Reasoning"": null,
-            ""Citation"": null,
-            ""Confidence"": 0,
-            ""Value"": null
-          },
-          ""Discipline"": {
-            ""Reasoning"": ""The document pertains to mechanical equipment, specifically a machine."",
-            ""Citation"": ""/Users/hak/Documents/GitHub/azure-openai-gpt-4-vision-pdf-extraction-sample/modifiedExtractor/Demo Files/Part 1.pdf"",
-            ""Confidence"": 0.9,
-            ""Value"": ""MEC - Mechanical""
-          },
-          ""Discipline2"": {
-            ""Reasoning"": null,
-            ""Citation"": null,
-            ""Confidence"": 0,
-            ""Value"": null
-          },
-          ""Discipline3"": {
-            ""Reasoning"": null,
-            ""Citation"": null,
-            ""Confidence"": 0,
-            ""Value"": null
-          },
-          ""LegacyNumber"": {
-            ""Reasoning"": ""No legacy number is mentioned in the document."",
-            ""Citation"": null,
-            ""Confidence"": 0,
-            ""Value"": null
-          },
-          ""Equipment"": {
-            ""Reasoning"": ""The equipment type is \u0027Trigonal-Machine\u0027 with type \u0027SM-D3/HK\u0027."",
-            ""Citation"": ""/Users/hak/Documents/GitHub/azure-openai-gpt-4-vision-pdf-extraction-sample/modifiedExtractor/Demo Files/Part 1.pdf"",
-            ""Confidence"": 0.9,
-            ""Value"": ""Trigonal-Machine SM-D3/HK""
-          },
-          ""SubEquipment"": {
-            ""Reasoning"": ""No specific sub-equipment is mentioned in the document."",
-            ""Citation"": null,
-            ""Confidence"": 0,
-            ""Value"": null
-          },
-          ""TagNumber"": {
-            ""Reasoning"": ""No tag number matching the specified formats is found in the document."",
-            ""Citation"": null,
-            ""Confidence"": 0,
-            ""Value"": null
-          },
-          ""ProjectID_AFE"": {
-            ""Reasoning"": ""No project ID or AFE number is mentioned in the document."",
-            ""Citation"": null,
-            ""Confidence"": 0,
-            ""Value"": null
-          },
-          ""FacilityCode"": {
-            ""Reasoning"": ""No facility code is mentioned in the document."",
-            ""Citation"": null,
-            ""Confidence"": 0,
-            ""Value"": null
-          },
-          ""ThirdPartyName"": {
-            ""Reasoning"": ""The third party name \u0027SIEFER AMERICA\u0027 and \u0027HEATEC INC.\u0027 are mentioned as the customer."",
-            ""Citation"": ""/Users/hak/Documents/GitHub/azure-openai-gpt-4-vision-pdf-extraction-sample/modifiedExtractor/Demo Files/Part 1.pdf"",
-            ""Confidence"": 0.9,
-            ""Value"": ""SIEFER AMERICA | HEATEC INC.""
-          }
+            // Initialize the expected keys by reading from the JSON file
+            string expectedKeysFilePath = Path.Combine(expectedOutputsPath, "ExpectedKeys.json");
+            Assert.True(File.Exists(expectedKeysFilePath), $"Expected keys file not found: {expectedKeysFilePath}");
+            string expectedKeysJson = File.ReadAllText(expectedKeysFilePath);
+            expectedKeys = JsonConvert.DeserializeObject<string[]>(expectedKeysJson);
         }
-        ";
 
         [Fact]
-        public void TestFilesExist()
+        public void TestPdfFilesHaveExtractionJson()
         {
-            var jsonFiles = Directory.GetFiles(Path.Combine(outputDirectory), "*.Extraction.json");
+            var pdfFiles = Directory.GetFiles(demoFilesPath, "*.pdf");
 
-            foreach (var jsonFile in jsonFiles)
+            foreach (var pdfFile in pdfFiles)
             {
-                Assert.True(File.Exists(jsonFile), $"Extraction JSON file not found: {jsonFile}");
+                string pdfFileName = Path.GetFileNameWithoutExtension(pdfFile);
+                string expectedJsonFilePath = Path.Combine(outputDirectory, pdfFileName + ".Extraction.json");
+                
+                Assert.True(File.Exists(expectedJsonFilePath), $"Extraction JSON file not found for PDF: {pdfFile}");
             }
         }
 
@@ -162,11 +54,9 @@ namespace Extractor.Test
             }
         }
 
-
         [Fact]
         public void TestJsonValuePairsMatchExpectedOutput()
         {
-            dynamic expectedDataPart1 = JsonConvert.DeserializeObject(expectedJsonPart1);
             var jsonFiles = Directory.GetFiles(Path.Combine(outputDirectory), "*.Extraction.json");
 
             foreach (var jsonFile in jsonFiles)
@@ -175,15 +65,19 @@ namespace Extractor.Test
                 dynamic generatedData = JsonConvert.DeserializeObject(json);
                 string fileName = Path.GetFileNameWithoutExtension(jsonFile).Replace(".Extraction", "");
 
+                // Construct the expected JSON file path
+                string expectedJsonFilePath = Path.Combine(expectedOutputsPath, fileName + ".Extraction.json");
 
-                if (fileName == "Part 1") // Specific check for Part 1.pdf
-                {
-                    CompareJsonValues(expectedDataPart1, generatedData, jsonFile);
-                }
-                // You can add 'else if' blocks here for other files and their expected outputs if needed.
+                // Ensure the expected JSON file exists
+                Assert.True(File.Exists(expectedJsonFilePath), $"Expected JSON file not found for {fileName}: {expectedJsonFilePath}");
+
+                // Read the expected JSON content
+                string expectedJson = File.ReadAllText(expectedJsonFilePath);
+                dynamic expectedData = JsonConvert.DeserializeObject(expectedJson);
+
+                CompareJsonValues(expectedData, generatedData, jsonFile);
             }
         }
-
 
         private void CompareJsonValues(dynamic expectedData, dynamic generatedData, string jsonFile)
         {
@@ -195,7 +89,7 @@ namespace Extractor.Test
                 {
                     if (generatedData[key] is JObject generatedObject)
                     {
-                       Assert.True(string.Equals(Convert.ToString(expectedObject["Value"]), Convert.ToString(generatedObject["Value"])), $"Value mismatch for key '{key}' in {jsonFile}");
+                        Assert.True(string.Equals(Convert.ToString(expectedObject["Value"]), Convert.ToString(generatedObject["Value"])), $"Value mismatch for key '{key}' in {jsonFile}");
                     }
                     else
                     {
@@ -209,16 +103,14 @@ namespace Extractor.Test
             }
         }
 
-
         [Fact]
         public void TestExecutionTime()
         {
             var stopWatch = System.Diagnostics.Stopwatch.StartNew();
-            // Assuming your main program is in ModifiedExtractor.Program and accessible
             ModifiedExtractor.Program.Main(new string[0]);
             stopWatch.Stop();
 
             Console.WriteLine($"Execution time: {stopWatch.Elapsed.TotalSeconds} seconds");
         }
-    } // Close UnitTest1 class
-} // Close namespace Extractor.Test
+    }
+}

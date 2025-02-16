@@ -402,9 +402,11 @@ FodyWeavers.xsd
 *.jpg
 *Outputs.json
 
-# Files
+# Folders
 Demo Files/
 Output/
 TempImages/
+ExpectedOutputs/
 
+# Files
 .DS_Store
