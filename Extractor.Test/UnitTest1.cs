@@ -12,15 +12,24 @@ namespace Extractor.Test
         private readonly string demoFilesPath = Path.Combine("..", "..", "..", "..", "modifiedExtractor", "Demo Files");
         private readonly string expectedOutputsPath = Path.Combine("..", "..", "..", "..", "Extractor.Test", "ExpectedOutputs");
 
-        private string[] expectedKeys;
+        private string[]? expectedKeys;
 
         public UnitTest1()
         {
             // Initialize the expected keys by reading from the JSON file
             string expectedKeysFilePath = Path.Combine(expectedOutputsPath, "ExpectedKeys.json");
+
+            // Check if the file exists
             Assert.True(File.Exists(expectedKeysFilePath), $"Expected keys file not found: {expectedKeysFilePath}");
+
+            // Read the file content
             string expectedKeysJson = File.ReadAllText(expectedKeysFilePath);
+
+            // Deserialize the JSON content
             expectedKeys = JsonConvert.DeserializeObject<string[]>(expectedKeysJson);
+
+            if (expectedKeys == null)
+                throw new JsonSerializationException("Failed to deserialize expected keys from JSON.");
         }
 
         [Fact]
@@ -33,6 +42,7 @@ namespace Extractor.Test
                 string pdfFileName = Path.GetFileNameWithoutExtension(pdfFile);
                 string expectedJsonFilePath = Path.Combine(outputDirectory, pdfFileName + ".Extraction.json");
                 
+
                 Assert.True(File.Exists(expectedJsonFilePath), $"Extraction JSON file not found for PDF: {pdfFile}");
             }
         }
@@ -46,6 +56,12 @@ namespace Extractor.Test
             {
                 var json = File.ReadAllText(jsonFile);
                 dynamic data = JsonConvert.DeserializeObject(json);
+
+                if (data == null)
+                    throw new JsonSerializationException($"Failed to deserialize JSON data for file: {jsonFile}");
+
+                if (expectedKeys == null)
+                    throw new ArgumentNullException(nameof(expectedKeys), "Expected keys array is null.");
 
                 foreach (var key in expectedKeys)
                 {
@@ -63,6 +79,10 @@ namespace Extractor.Test
             {
                 var json = File.ReadAllText(jsonFile);
                 dynamic generatedData = JsonConvert.DeserializeObject(json);
+
+                if (generatedData == null)
+                    throw new JsonSerializationException($"Failed to deserialize generated JSON data for file: {jsonFile}");
+
                 string fileName = Path.GetFileNameWithoutExtension(jsonFile).Replace(".Extraction", "");
 
                 // Construct the expected JSON file path
@@ -75,12 +95,21 @@ namespace Extractor.Test
                 string expectedJson = File.ReadAllText(expectedJsonFilePath);
                 dynamic expectedData = JsonConvert.DeserializeObject(expectedJson);
 
+                if (expectedData == null)
+                    throw new JsonSerializationException($"Failed to deserialize expected JSON data for file: {expectedJsonFilePath}");
+
                 CompareJsonValues(expectedData, generatedData, jsonFile);
             }
         }
 
         private void CompareJsonValues(dynamic expectedData, dynamic generatedData, string jsonFile)
         {
+            if (generatedData == null) throw new ArgumentNullException(nameof(generatedData), $"Generated data is null for file: {jsonFile}");
+            if (expectedData == null) throw new ArgumentNullException(nameof(expectedData), $"Expected data is null for file: {jsonFile}");
+
+            if (expectedKeys == null)
+                throw new ArgumentNullException(nameof(expectedKeys), "Expected keys array is null.");
+
             foreach (string key in expectedKeys)
             {
                 Assert.True(generatedData.ContainsKey(key), $"Key '{key}' not found in generated JSON: {jsonFile}");
@@ -89,7 +118,10 @@ namespace Extractor.Test
                 {
                     if (generatedData[key] is JObject generatedObject)
                     {
-                        Assert.True(string.Equals(Convert.ToString(expectedObject["Value"]), Convert.ToString(generatedObject["Value"])), $"Value mismatch for key '{key}' in {jsonFile}");
+                        string expectedValueStr = Convert.ToString(expectedObject["Value"]!)!;
+                        string generatedValueStr = Convert.ToString(generatedObject["Value"]!)!;
+                        if (!string.Equals(expectedValueStr, generatedValueStr))
+                            Assert.Fail($"Value mismatch for key '{key}' in {jsonFile}. Expected: {expectedValueStr}, Got: {generatedValueStr}");
                     }
                     else
                     {
@@ -98,7 +130,10 @@ namespace Extractor.Test
                 }
                 else
                 {
-                     Assert.True(string.Equals(Convert.ToString(expectedData[key]), Convert.ToString(generatedData[key])), $"Value mismatch for key '{key}' in {jsonFile}");
+                    string expectedValueStr = Convert.ToString(expectedData[key]!)!;
+                    string generatedValueStr = Convert.ToString(generatedData[key]!)!;
+                    if (!string.Equals(expectedValueStr, generatedValueStr))
+                        Assert.Fail($"Value mismatch for key '{key}' in {jsonFile}. Expected: {expectedValueStr}, Got: {generatedValueStr}");
                 }
             }
         }
