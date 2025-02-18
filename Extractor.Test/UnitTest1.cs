@@ -18,20 +18,30 @@ namespace Extractor.Test
 
         public UnitTest1()
         {
-            // Initialize the expected keys by reading from the JSON file
-            string expectedKeysFilePath = Path.Combine(expectedOutputsPath, "ExpectedKeys.json");
-
-            // Check if the file exists
-            Assert.True(File.Exists(expectedKeysFilePath), $"Expected keys file not found: {expectedKeysFilePath}");
-
-            // Read the file content
-            string expectedKeysJson = File.ReadAllText(expectedKeysFilePath);
-
-            // Deserialize the JSON content
-            expectedKeys = JsonConvert.DeserializeObject<string[]>(expectedKeysJson);
+            // Initialize the expected keys by hardcoding them
+            expectedKeys = new string[]
+            {
+                "FileName",
+                "DocumentTitle",
+                "DateOfDocument",
+                "DocumentRevision",
+                "DocumentType",
+                "DocumentType2",
+                "DocumentType3",
+                "Discipline",
+                "Discipline2",
+                "Discipline3",
+                "LegacyNumber",
+                "Equipment",
+                "SubEquipment",
+                "TagNumber",
+                "ProjectID_AFE",
+                "FacilityCode",
+                "ThirdPartyName"
+            };
 
             if (expectedKeys == null)
-                throw new JsonSerializationException("Failed to deserialize expected keys from JSON.");
+                throw new ArgumentNullException(nameof(expectedKeys), "Expected keys array is null.");
         }
 
         [Fact]

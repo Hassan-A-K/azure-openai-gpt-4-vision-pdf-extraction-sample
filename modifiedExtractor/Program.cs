@@ -70,7 +70,7 @@ namespace ModifiedExtractor
                 ClearDirectory(outputFolderPath);
                 ClearDirectory(tempImagesFolder);
 
-                string systemPromptFilePath = Path.Combine(currentDirectory, "SysPrompt", "DCPromptsForAzureOpenAI.txt");
+                string systemPromptFilePath = Path.Combine(currentDirectory, "SysPrompt", "DCPromptsForAzureOpenAI Enchanced 4.txt");
                 if (!File.Exists(systemPromptFilePath))
                 {
                     Console.WriteLine($"System Prompt does not exist at path: {systemPromptFilePath}");
